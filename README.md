@@ -112,5 +112,5 @@ can be run on any system as long is it has `docker`, including Windows.
 While this [windows support](https://github.com/sobolevn/git-secret/issues/40)
 thread states that people have got it to work with `cygwin` and `WSL`,
 that means that you also need one of those systems as a dependency.
-Subjectively, in the modern workflow it's more common that a developer
-will have `docker` installed, before one of those other systems.
+This solution is aimed at people who already have `docker` and
+don't want to install other dependencies.
