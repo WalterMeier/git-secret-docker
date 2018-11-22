@@ -44,25 +44,31 @@ docker build -t git-secret .
 
 # Usage
 
-## git secret commands
+## exec
 
-You can manually run the `git-secret` container and mount the data in it as you see fit,
-so that you can then execute the `git secret` commands against said data. 
+The `exec` directory contains the executable wrapper script(-s),
+that let you use your newly created image in a way, similar to
+how you would use `git secret <arg>` commands
+if you had `git-secret` installed locally.
 
-To make it easier however, we've provided the `gitsecret` wrapper in the `exec` directory.
-Just add the `exec` dir to your PATH and you can run `git secret` commands via
-the `gitsecret` wrapper as follows.
+Just add this directory to your `PATH`, and start using them.
+
+The following is an explanation of how these scripts work.
+
+## gitsecret &lt;args&gt;
+
+Execute [git-secret](http://git-secret.io/) commands in your current working directory.
 ```
 cd /path/to/repo/you/want/to/encrypt
 gitsecret init
-gitsecret tell john.doe@example.com
+gitsecret whoknows
 # etc
 ```
-> In a nutshell, this `gitsecret` wrapper just mounts the current directory
+> In a nutshell, this `gitsecret` script just mounts the current directory
 to the `git-secret` container and runs the `git secret <args>` command
 against it.
 
-## Adding other people to git-secret repo
+## gitsecret addperson &lt;args&gt;
 
 As stated in the [git-secret-tell](http://git-secret.io/git-secret-tell) documentation,
 to add another user to the `git-secret` enabled repo,
@@ -71,16 +77,19 @@ can use it.
 In this case it means that you'll first need to import the public key in the
 container's `gpg`, before `git-secret` can use it.
 
-To make this importing process easier, we've provided the `gitsecret_add_person`
-wrapper that will do most of the heavy lifting.
-You'll only need to provide the public key file path on your local machine,
-and the email that the key was generated with (the email of the key's owner).
-**Both arguments are required**
+We've extended the `gitsecret` script with the `addperson` command,
+to make this importing process easier.
+
+It requires two arguments:
+* The public `gnupg` key of the person you wish to add,
+which was expoerted in ascii armored form
+    * `gpg --export --armor <email> > public.key`
+* The email associated with said public key
 
 ```shell
-gitsecret_add_person /path/to/public.key other.dev@example.com
+gitsecret addperson /path/to/public.key other.person@example.com
 ```
-> In a nutshell, this `gitsecret_add_person` wrapper pipes the public key
+> In a nutshell, this `gitsecret addperson` script pipes the public key
 into the container, where `gpg --import` receives it. After that the 
 `git secret tell <email>` command is executed.
 
@@ -90,7 +99,7 @@ however it doesn't affect the functionality and still removes the
 person from the `pubring`
 
 # FAQ
-* Why not just install `git-secret` locally?
-    * The main reason is Windows. 
-    `git-secret` currently doesn't have Windows support, but this solution 
-    can be run on any system as long is it has `docker`, including Windows.
+## Why not just install `git-secret` locally?
+The main reason is Windows. 
+`git-secret` currently doesn't have Windows support, but this solution 
+can be run on any system as long is it has `docker`, including Windows.
