@@ -45,6 +45,12 @@ Just run the following.
 docker build -t git-secret .
 ```
 
+Or alternatively, you can specify which `git-secret` version you want during build.
+
+```shell
+docker build --build-arg GIT_SECRET_VERSION=0.2.3 -t git-secret .
+```
+
 The resulting image will be used by all the other scripts, described in the **Usage** section.
 
 # Usage
