@@ -10,6 +10,8 @@ A private _GNU Privacy Guard_ key generated on your local system.
 Here's a guide on [Generating a new GPG key](https://help.github.com/articles/generating-a-new-gpg-key/),
 if you haven't done that already.
 
+_FYI:_ On Windows, Git Bash already contains the `gpg` command line tool.
+
 # Getting started
 
 ## GNU Privacy Guard
@@ -25,12 +27,13 @@ gpg --export-secret-key -a <email> > private.key
 
 > `private.key` is already in `.gitignore`
 
-> Even though the container has `gpg` installed and available at runtime,
+> Even though the image has `gpg` included and available at runtime,
 generating the `gnupg` key in a container is a difficult task.
 Multiple variables come into play when
 `gpg` is running `gpg-agent` and collecting random entropy,
 which are linked to how the container is launched
 and in what kind of environment the `docker` daemon is running.
+Hence this export/import solution.
 
 ## Docker image build
 
@@ -41,6 +44,8 @@ Just run the following.
 ```shell
 docker build -t git-secret .
 ```
+
+The resulting image will be used by all the other scripts, described in the **Usage** section.
 
 # Usage
 
@@ -59,8 +64,9 @@ The following is an explanation of how these scripts work.
 
 Execute [git-secret](http://git-secret.io/) commands in your current working directory.
 ```
-cd /path/to/repo/you/want/to/encrypt
+cd /path/to/repo/with/secrets
 gitsecret init
+gitsecret tell <my-email>
 gitsecret whoknows
 # etc
 ```
@@ -68,16 +74,15 @@ gitsecret whoknows
 to the `git-secret` container and runs the `git secret <args>` command
 against it.
 
-## gitsecret addperson &lt;args&gt;
+## gitsecret addperson &lt;public.key&gt; &lt;email&gt;
 
 As stated in the [git-secret-tell](http://git-secret.io/git-secret-tell) documentation,
-to add another user to the `git-secret` enabled repo,
-you will need their public key already imported in `gpg` before `git-secret`
-can use it.
+to add another user to the `git-secret` enabled repo, you will need
+their public key already imported in `gpg` before `git-secret` can use it.
 In this case it means that you'll first need to import the public key in the
 container's `gpg`, before `git-secret` can use it.
 
-We've extended the `gitsecret` script with the `addperson` command,
+The `gitsecret` script has been extended with the `addperson` command,
 to make this importing process easier.
 
 It requires two arguments:
@@ -103,3 +108,9 @@ person from the `pubring`
 The main reason is Windows. 
 `git-secret` currently doesn't have Windows support, but this solution 
 can be run on any system as long is it has `docker`, including Windows.
+
+While this [windows support](https://github.com/sobolevn/git-secret/issues/40)
+thread states that people have got it to work with `cygwin` and `WSL`,
+that means that you also need one of those systems as a dependency.
+Subjectively, in the modern workflow it's more common that a developer
+will have `docker` installed, before one of those other systems.
