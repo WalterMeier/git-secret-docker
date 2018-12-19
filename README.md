@@ -66,21 +66,21 @@ Just add this directory to your `PATH`, and start using them.
 
 The following is an explanation of how these scripts work.
 
-## gitsecret &lt;args&gt;
+## git-secret &lt;args&gt;
 
 Execute [git-secret](http://git-secret.io/) commands in your current working directory.
 ```
 cd /path/to/repo/with/secrets
-gitsecret init
-gitsecret tell <my-email>
-gitsecret whoknows
+git-secret init
+git-secret tell <my-email>
+git-secret whoknows
 # etc
 ```
-> In a nutshell, this `gitsecret` script just mounts the current directory
+> In a nutshell, this `git-secret` script just mounts the current directory
 to the `git-secret` container and runs the `git secret <args>` command
 against it.
 
-## gitsecret addperson &lt;public.key&gt; &lt;email&gt;
+## git-secret addperson &lt;public.key&gt; &lt;email&gt;
 
 As stated in the [git-secret-tell](http://git-secret.io/git-secret-tell) documentation,
 to add another user to the `git-secret` enabled repo, you will need
@@ -88,7 +88,7 @@ their public key already imported in `gpg` before `git-secret` can use it.
 In this case it means that you'll first need to import the public key in the
 container's `gpg`, before `git-secret` can use it.
 
-The `gitsecret` script has been extended with the `addperson` command,
+The `git-secret` script has been extended with the `addperson` command,
 to make this importing process easier.
 
 It requires two arguments:
@@ -98,14 +98,14 @@ which was expoerted in ascii armored form
 * The email associated with said public key
 
 ```shell
-gitsecret addperson /path/to/public.key other.person@example.com
+git-secret addperson /path/to/public.key other.person@example.com
 ```
-> In a nutshell, this `gitsecret addperson` script pipes the public key
+> In a nutshell, this `git-secret addperson` script pipes the public key
 into the container, where `gpg --import` receives it. After that the 
 `git secret tell <email>` command is executed.
 
 # Known issues
-* `gitsecret killperson <email>` shows a `gpg` error,
+* `git-secret killperson <email>` shows a `gpg` error,
 however it doesn't affect the functionality and still removes the
 person from the `pubring`
 
@@ -115,8 +115,9 @@ The main reason is Windows.
 `git-secret` currently doesn't have Windows support, but this solution 
 can be run on any system as long is it has `docker`, including Windows.
 
-While this [windows support](https://github.com/sobolevn/git-secret/issues/40)
-thread states that people have got it to work with `cygwin` and `WSL`,
+While [this windows support thread](https://github.com/sobolevn/git-secret/issues/40)
+states that people have got it to work with `cygwin` and `WSL`,
 that means that you also need one of those systems as a dependency.
-This solution is aimed at people who already have `docker` and
-don't want to install other dependencies.
+
+The dockerized solution in this repo is aimed at people who already have `docker`
+and don't want to install other dependencies.
